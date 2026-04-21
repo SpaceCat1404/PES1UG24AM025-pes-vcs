@@ -149,6 +149,8 @@ int index_load(Index *index) {
                        &e->size, e->path);
         if (n != 5) break;
         if (hex_to_hash(hex, &e->hash) != 0) { fclose(f); return -1; }
+        // Reject paths that were silently truncated by fscanf's width limiter
+        if (strlen(e->path) >= sizeof(e->path) - 1) { fclose(f); return -1; }
         index->count++;
     }
 
