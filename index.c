@@ -247,10 +247,17 @@ int index_add(Index *index, const char *path) {
         entry->path[sizeof(entry->path) - 1] = '\0';
     }
 
-    entry->hash     = blob_id;
-    entry->mode     = (st.st_mode & S_IXUSR) ? 0100755 : 0100644;
+    entry->hash      = blob_id;
+    // Derive mode: executable regular file vs. plain regular file
+    // Directories are handled by tree_from_index, not staged directly
+    if (S_ISLNK(st.st_mode))
+        entry->mode = 0120000; // symlink
+    else if (st.st_mode & S_IXUSR)
+        entry->mode = 0100755;
+    else
+        entry->mode = 0100644;
     entry->mtime_sec = (uint64_t)st.st_mtime;
-    entry->size     = (uint32_t)st.st_size;
+    entry->size      = (uint32_t)st.st_size;
 
     return index_save(index);
 }
