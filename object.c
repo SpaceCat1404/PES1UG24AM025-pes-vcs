@@ -237,17 +237,16 @@ int object_read(const ObjectID *id, ObjectType *type_out, void **data_out, size_
         free(buf); return -1;
     }
 
-    // Step 5: Extract data portion (after the '\0')
+    // Step 5: Extract data portion (after the '\0') using validated length
     uint8_t *data_start = null_pos + 1;
-    size_t data_len = (size_t)file_size - (size_t)(data_start - buf);
 
-    uint8_t *out = malloc(data_len + 1);
+    uint8_t *out = malloc(actual_data_len + 1);
     if (!out) { free(buf); return -1; }
-    memcpy(out, data_start, data_len);
-    out[data_len] = '\0'; // null-terminate for string safety
+    memcpy(out, data_start, actual_data_len);
+    out[actual_data_len] = '\0'; // null-terminate for safe string use
 
     free(buf);
     *data_out = out;
-    *len_out = data_len;
+    *len_out = actual_data_len;
     return 0;
 }
