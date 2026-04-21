@@ -225,6 +225,11 @@ int object_read(const ObjectID *id, ObjectType *type_out, void **data_out, size_
         *type_out = OBJ_COMMIT;
     else { free(buf); return -1; }
 
+    // Validate the size field in the header matches actual data length
+    size_t declared_size = (size_t)strtoul(space_pos + 1, NULL, 10);
+    size_t actual_data_len = (size_t)file_size - (size_t)(null_pos + 1 - buf);
+    if (declared_size != actual_data_len) { free(buf); return -1; }
+
     // Step 4: Verify integrity — recompute SHA-256 and compare to the ID
     ObjectID computed;
     compute_hash(buf, (size_t)file_size, &computed);
