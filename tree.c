@@ -139,6 +139,8 @@ static int write_tree_level(const IndexEntry *entries, int count,
         const char *rel = entries[i].path + prefix_len; // path relative to this level
         const char *slash = strchr(rel, '/');
 
+        if (tree.count >= MAX_TREE_ENTRIES) return -1; // too many entries at this level
+
         if (!slash) {
             // Flat file entry at this level — add directly
             TreeEntry *te = &tree.entries[tree.count++];
