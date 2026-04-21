@@ -211,7 +211,8 @@ int commit_create(const char *message, ObjectID *commit_id_out) {
         return -1;
     }
 
-    // Read parent commit hash from HEAD (absent on first commit)
+    // Read parent from HEAD; head_read returns -1 on an empty repo (first commit)
+    // so has_parent=0 causes commit_serialize to omit the "parent" line
     c.has_parent = (head_read(&c.parent) == 0) ? 1 : 0;
 
     // Set author and timestamp
