@@ -234,6 +234,11 @@ int commit_create(const char *message, ObjectID *commit_id_out) {
     // Advance the branch pointer to the new commit
     if (head_update(&commit_id) != 0) return -1;
 
+    // Print short commit summary to stdout
+    char hex[HASH_HEX_SIZE + 1];
+    hash_to_hex(&commit_id, hex);
+    printf("[%s] %s\n", hex, message);
+
     if (commit_id_out) *commit_id_out = commit_id;
     return 0;
 }
