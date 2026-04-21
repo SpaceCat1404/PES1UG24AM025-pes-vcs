@@ -120,15 +120,11 @@ int tree_serialize(const Tree *tree, void **data_out, size_t *len_out) {
 
 // ─── TODO: Implement these ──────────────────────────────────────────────────
 
-// Recursive helper: build a tree from a slice of index entries that all share
-// the same directory prefix at depth `prefix_len`.
-// Each entry's path has already had the prefix stripped, so a flat file at
-// this level has no '/' while a subdirectory entry has one.
-//
-// entries  : pointer into the index entries array for this sub-slice
-// count    : number of entries in the slice
-// prefix_len: byte offset into each entry's path where this level starts
-// id_out   : receives the ObjectID of the written tree object
+// Recursive helper: build a tree for a slice of index entries at a given depth.
+// prefix_len is the byte offset into each entry's path for the current level
+// (0 at root; advances by "dirname/" length on each recursion).
+// Entries with no '/' are direct files; entries with '/' are grouped by their
+// first path component and recursed into as subtrees.
 static int write_tree_level(const IndexEntry *entries, int count,
                              size_t prefix_len, ObjectID *id_out) {
     Tree tree;
