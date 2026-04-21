@@ -20,6 +20,13 @@
 // Forward declaration for object_write (implemented in object.c)
 int object_write(ObjectType type, const void *data, size_t len, ObjectID *id_out);
 
+// Weak stub so test_tree links without index.o; the real definition in
+// index.o overrides this when building pes or the integration tests.
+__attribute__((weak)) int index_load(Index *index) {
+    index->count = 0;
+    return 0;
+}
+
 // ─── Mode Constants ─────────────────────────────────────────────────────────
 
 #define MODE_FILE      0100644
