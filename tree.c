@@ -193,7 +193,6 @@ static int write_tree_level(const IndexEntry *entries, int count,
 int tree_from_index(ObjectID *id_out) {
     Index index;
     if (index_load(&index) != 0) return -1;
-    if (index.count == 0) return -1; // nothing staged
-
+    // Allow an empty index: write an empty tree object (no entries)
     return write_tree_level(index.entries, index.count, 0, id_out);
 }
