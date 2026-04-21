@@ -197,6 +197,11 @@ int head_update(const ObjectID *new_commit) {
 //
 // Returns 0 on success, -1 on error.
 int commit_create(const char *message, ObjectID *commit_id_out) {
+    if (!message || message[0] == '\0') {
+        fprintf(stderr, "error: commit message cannot be empty\n");
+        return -1;
+    }
+
     Commit c;
     memset(&c, 0, sizeof(c));
 
